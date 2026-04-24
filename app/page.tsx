@@ -19,7 +19,13 @@ export default async function Page() {
   if (!session) return <LoginPage />
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={
+        {
+          name: session.user?.name ?? "User",
+          email: session?.user?.email ?? "user@example.com",
+          avatar: session.user?.image ?? ""
+        }
+      }/>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">

@@ -1,6 +1,6 @@
-import { GetHello } from "@/app/lib/client";
+import { GetTournaments } from "@/app/lib/client";
 
 export default async function ExampleServerComponent() {
-	const result = await GetHello()
-	return <div>Result from server: {result}</div>
+	const result = await GetTournaments()
+	return <div>Result from server: {result.length}</div>
 }

@@ -1,6 +1,12 @@
 import "server-only";
 import apiRequest from "@/app/lib/auth";
 
-export async function GetHello(): Promise<string> {
-	return apiRequest<string>("/hello", {method: "GET"})
+type Tournament = {
+	id: number;
+	date: string;
+	name: string;
+}
+
+export async function GetTournaments(): Promise<Tournament[]> {
+	return apiRequest<Tournament[]>("/tournaments", {method: "GET"})
 }

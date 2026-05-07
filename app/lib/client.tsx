@@ -5,6 +5,7 @@ type Tournament = {
 	id: number;
 	date: string;
 	name: string;
+	updatedTime: string
 }
 
 export async function GetTournaments(): Promise<Tournament[]> {

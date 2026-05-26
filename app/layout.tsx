@@ -34,7 +34,13 @@ export default async function RootLayout({
 	children: React.ReactNode;
 }>) {
 	const session = await auth()
-	if (!session) return <LoginPage/>
+	if (!session) return (
+		<html>
+		<body>
+		<LoginPage/>
+		</body>
+		</html>
+	)
 	return (
 		<html
 			lang="en"

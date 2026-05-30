@@ -1,9 +1,11 @@
-import { GetTournaments } from "@/app/lib/client";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import TournamentRow from "@/app/tournaments/tournament-row";
+"use client"
 
-export default async function Tournaments() {
-	const tournaments = await GetTournaments()
+import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import TournamentRow from "@/app/tournaments/load/tournament-row";
+import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider";
+
+export default function Tournaments() {
+	const {tournaments} = useSharedTournaments()
 	return (
 		<Table>
 			<TableCaption>Tournaments available for import.</TableCaption>

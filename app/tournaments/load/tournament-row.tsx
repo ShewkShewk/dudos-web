@@ -1,27 +1,30 @@
 "use client"
 
-import { Tournament } from "@/app/lib/client";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
-import { deleteTournament, importTournament } from "@/app/tournaments/actions";
 import { useTransition } from "react";
+import { Tournament } from "@/app/lib/domain";
+import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider";
 
 interface TournamentRowProps {
 	tournament: Tournament;
 }
 
 export default function TournamentRow({tournament}: TournamentRowProps) {
+	const {refreshTournaments, importTournament, deleteTournament} = useSharedTournaments()
 	const [pending, startTransition] = useTransition();
 
 	const handleImport = () => {
 		startTransition(async () => {
 			await importTournament(tournament.id)
+			await refreshTournaments()
 		})
 	}
 	const handleDelete = () => {
 		startTransition(async () => {
 			await deleteTournament(tournament.id)
+			await refreshTournaments()
 		})
 	}
 	return <TableRow key={tournament.id}>

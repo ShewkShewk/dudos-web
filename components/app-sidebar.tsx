@@ -41,12 +41,12 @@ const data = {
 			items: [
 				{
 					title: "Tournaments",
-					url: "tournaments",
+					url: "/tournaments/load",
 				},
 			],
 		},
 		{
-			title: "Models",
+			title: "Tournament Tools",
 			url: "#",
 			icon: (
 				<BotIcon
@@ -54,17 +54,9 @@ const data = {
 			),
 			items: [
 				{
-					title: "Genesis",
-					url: "#",
-				},
-				{
-					title: "Explorer",
-					url: "#",
-				},
-				{
-					title: "Quantum",
-					url: "#",
-				},
+					title: "Show Pairings",
+					url: "/tournaments/pairings",
+				}
 			],
 		},
 		{

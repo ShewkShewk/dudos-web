@@ -1,12 +1,6 @@
 import "server-only";
 import apiRequest from "@/app/lib/auth";
-
-export type Tournament = {
-	id: number;
-	date: string;
-	name: string;
-	updatedTime: string
-}
+import { Tournament, TournamentPairings } from "@/app/lib/domain";
 
 export async function GetTournaments(): Promise<Tournament[]> {
 	return apiRequest<Tournament[]>("/tournaments", {method: "GET"})
@@ -18,4 +12,8 @@ export async function ImportTournament(tournamentId: number) {
 
 export async function DeleteTournament(tournamentId: number) {
 	return apiRequest(`/tournaments/${tournamentId}`, {method: "DELETE"})
+}
+
+export async function GetLatestPairings(tournamentId: number): Promise<TournamentPairings> {
+	return apiRequest<TournamentPairings>(`/tournaments/${tournamentId}/pairings/latest`, {method: "GET"})
 }

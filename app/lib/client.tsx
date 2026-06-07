@@ -14,6 +14,6 @@ export async function DeleteTournament(tournamentId: number) {
 	return apiRequest(`/tournaments/${tournamentId}`, {method: "DELETE"})
 }
 
-export async function GetLatestPairings(tournamentId: number): Promise<TournamentPairings> {
+export async function GetLatestPairings(tournamentId: string): Promise<TournamentPairings> {
 	return apiRequest<TournamentPairings>(`/tournaments/${tournamentId}/pairings/latest`, {method: "GET"})
 }

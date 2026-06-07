@@ -3,11 +3,7 @@ import { auth } from "@/auth";
 
 import { NextRequest, NextResponse } from 'next/server';
 
-interface RouteProps {
-	params: Promise<{ tournamentId: number }>;
-}
-
-export async function GET(request: NextRequest, {params}: RouteProps) {
+export async function GET(request: NextRequest, {params}: { params: Promise<{ tournamentId: string; }>; }) {
 	const session = await auth()
 	if (!session?.user) {
 		return Response.json({error: 'Unauthorized'}, {status: 401})

@@ -34,15 +34,30 @@ export function TournamentPairingsTable({tournament}: TournamentPairingsProps) {
 			</div>
 		)
 	}
+	tournamentPairings.eventPairings.sort((a, b) => a.pairings.length - b.pairings.length)
+	const leftColPairings = tournamentPairings.eventPairings.filter((value, index) => {
+		return index % 2 == 0
+	})
+	const rightColPairings = tournamentPairings.eventPairings.filter((value, index) => {
+		return index % 2 == 1
+	})
 
 	return (
-		<div className="inline-flex flex-wrap">
-			{tournamentPairings
-				.eventPairings
-				.map(pairing => (
-					<EventPairingTable key={pairing.name} eventPairing={pairing}/>
-				))
-			}
+		<div className="flex">
+			<div className="inline-flex flex-wrap flex-col basis-1/2">
+				{
+					leftColPairings.map(pairing => (
+						<EventPairingTable key={pairing.name} eventPairing={pairing}/>
+					))
+				}
+			</div>
+			<div className="inline-flex flex-wrap flex-col basis-1/2">
+				{
+					rightColPairings.map(pairing => (
+						<EventPairingTable key={pairing.name} eventPairing={pairing}/>
+					))
+				}
+			</div>
 		</div>
 	)
 }

@@ -1,7 +1,8 @@
 export type Tournament = {
-	id: number;
-	date: string;
-	name: string;
+	id: number
+	date: string
+	name: string
+	loaded: boolean
 	updatedTime: string
 }
 
@@ -19,19 +20,21 @@ type Judge = {
 	started: boolean;
 };
 
+export type EventPairing = {
+	name: string;
+	number: number;
+	pairings: {
+		room: string;
+		affEntry: Entry | null;
+		affResult: BallotResult | null;
+		negEntry: Entry | null;
+		negResult: BallotResult | null;
+		judges?: Judge[];
+	}[];
+}
+
 export type TournamentPairings = {
 	name: string;
 	updateTime: string;
-	eventPairings: {
-		name: string;
-		number: number;
-		pairings: {
-			room: string;
-			affEntry: Entry | null;
-			affResult: BallotResult | null;
-			negEntry: Entry | null;
-			negResult: BallotResult | null;
-			judge: Judge[];
-		}[];
-	}[];
+	eventPairings: EventPairing[];
 };

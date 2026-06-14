@@ -45,12 +45,35 @@ function PairingRow({pairing}: { pairing: SectionPairing }) {
 	} else if (pairing.affResult == "BYE" || pairing.negResult == "BYE") {
 		room = "BYE"
 	}
+	const roundStatus = getRoundStatus(pairing)
+	let roomTextColor = "text-red-500"
+	switch (roundStatus) {
+		case "DONE":
+			roomTextColor = "text-green-500"
+			break
+		case "IN_PROGRESS":
+			roomTextColor = "text-blue-500"
+			break
+	}
 	return (<TableRow key={pairing.affEntry?.id} className="even:bg-gray-200">
-		<TableCell className="py-0 text-[9px]">{room}</TableCell>
+		<TableCell className={`py-0 text-[9px] ${roomTextColor}`}>{room}</TableCell>
 		<TableCell className="py-0 text-[9px]">{affTeam?.name}</TableCell>
 		<TableCell className="py-0 text-[9px]">{negTeam?.name}</TableCell>
 		<TableCell className="py-0 text-[9px]">{
 			pairing.judges?.map(judge => (judge.name)).join(",")
 		}</TableCell>
 	</TableRow>)
+}
+
+function getRoundStatus(pairing: SectionPairing) {
+	let status = "NOT_STARTED"
+	const everyJudgeStarted = pairing.judges?.every((value) => {
+		return value.started
+	})
+	if (pairing.affResult != null || pairing.negResult != null) {
+		status = "DONE"
+	} else if (everyJudgeStarted) {
+		status = "IN_PROGRESS"
+	}
+	return status
 }

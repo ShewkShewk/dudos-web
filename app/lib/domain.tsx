@@ -20,17 +20,20 @@ type Judge = {
 	started: boolean;
 };
 
+export type SectionPairing = {
+	sectionId: number
+	room: string | null;
+	affEntry: Entry | null;
+	affResult: BallotResult | null;
+	negEntry: Entry | null;
+	negResult: BallotResult | null;
+	judges?: Judge[];
+}
+
 export type EventPairing = {
 	name: string;
 	number: number;
-	pairings: {
-		room: string;
-		affEntry: Entry | null;
-		affResult: BallotResult | null;
-		negEntry: Entry | null;
-		negResult: BallotResult | null;
-		judges?: Judge[];
-	}[];
+	pairings: SectionPairing[];
 }
 
 export type TournamentPairings = {

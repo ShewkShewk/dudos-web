@@ -19,14 +19,19 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 					<TableHeader>
 						<TableRow className="text-center text-sm">
 							<TableHead className="py-0 text-[9px]">Room</TableHead>
-							<TableHead className="py-0 text-[9px] text-center">Aff</TableHead>
-							<TableHead className="py-0 text-[9px] text-center">Neg</TableHead>
-							<TableHead className="py-0 text-[9px] text-center">Judges</TableHead>
+							{
+								eventPairing.flighted &&
+                                <TableHead className="py-0 text-[9px]">Flight</TableHead>
+							}
+							<TableHead className="py-0 text-[9px]">Aff</TableHead>
+							<TableHead className="py-0 text-[9px]">Neg</TableHead>
+							<TableHead className="py-0 text-[9px]">Judges</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{eventPairing.pairings.map((pairing) => (
-							<PairingRow pairing={pairing} key={pairing.sectionId}></PairingRow>
+							<PairingRow pairing={pairing} flighted={eventPairing.flighted}
+							            key={pairing.sectionId}></PairingRow>
 						))}
 					</TableBody>
 				</Table>
@@ -35,7 +40,7 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 	)
 }
 
-function PairingRow({pairing}: { pairing: SectionPairing }) {
+function PairingRow({pairing, flighted}: { pairing: SectionPairing, flighted: boolean }) {
 	const affTeam = pairing.affEntry ? pairing.affEntry : pairing.negEntry
 	const negTeam = pairing.affEntry ? pairing.negEntry : null
 
@@ -57,6 +62,7 @@ function PairingRow({pairing}: { pairing: SectionPairing }) {
 	}
 	return (<TableRow key={pairing.affEntry?.id} className="even:bg-gray-200">
 		<TableCell className={`py-0 text-[9px] ${roomTextColor}`}>{room}</TableCell>
+		{flighted && <TableCell className="py-0 text-[9px]">{pairing.flight}</TableCell>}
 		<TableCell className="py-0 text-[9px]">{affTeam?.name}</TableCell>
 		<TableCell className="py-0 text-[9px]">{negTeam?.name}</TableCell>
 		<TableCell className="py-0 text-[9px]">{

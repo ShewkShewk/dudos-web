@@ -22,6 +22,7 @@ type Judge = {
 
 export type SectionPairing = {
 	sectionId: number
+	flight: number
 	room: string | null;
 	affEntry: Entry | null;
 	affResult: BallotResult | null;
@@ -33,6 +34,7 @@ export type SectionPairing = {
 export type EventPairing = {
 	name: string;
 	number: number;
+	flighted: boolean
 	startTime: string;
 	pairings: SectionPairing[];
 }

@@ -33,6 +33,7 @@ export type SectionPairing = {
 export type EventPairing = {
 	name: string;
 	number: number;
+	startTime: string;
 	pairings: SectionPairing[];
 }
 

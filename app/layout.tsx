@@ -10,6 +10,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import ExampleServerComponent from "@/app/server-component";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import { Toaster } from "sonner";
 
 const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
 
@@ -77,6 +78,7 @@ export default async function RootLayout({
 						</div>
 					</header>
 					{children}
+					<Toaster/>
 				</SidebarInset>
 			</SidebarProvider>
 			)

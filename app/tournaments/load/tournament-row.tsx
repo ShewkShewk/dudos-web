@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useTransition } from "react";
 import { Tournament } from "@/app/lib/domain";
 import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider";
+import { toast } from "sonner";
 
 interface TournamentRowProps {
 	tournament: Tournament;
@@ -18,12 +19,14 @@ export default function TournamentRow({tournament}: TournamentRowProps) {
 	const handleImport = () => {
 		startTransition(async () => {
 			await importTournament(tournament.id)
+			toast.success("Tournament Loaded", {position: "top-center"})
 			await refreshTournaments()
 		})
 	}
 	const handleDelete = () => {
 		startTransition(async () => {
 			await deleteTournament(tournament.id)
+			toast.success("Tournament Deleted", {position: "top-center"})
 			await refreshTournaments()
 		})
 	}

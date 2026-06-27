@@ -7,7 +7,25 @@ export interface EventPairingsProps {
 }
 
 export function EventPairingTable({eventPairing}: EventPairingsProps) {
-
+	let colGroup = (
+		<colgroup>
+			<col className="w-[5%]"/>
+			<col className="w-[40%]"/>
+			<col className="w-[40%]"/>
+			<col className="w-[15%]"/>
+		</colgroup>
+	)
+	if (eventPairing.flighted) {
+		colGroup = (
+			<colgroup>
+				<col className="w-[7%]"/>
+				<col className="w-[4%]"/>
+				<col className="w-[37%]"/>
+				<col className="w-[37%]"/>
+				<col className="w-[15%]"/>
+			</colgroup>
+		)
+	}
 	return (
 		<Card className="m-1 p-0 border rounded-sm gap-0">
 			<CardHeader className="items-center text-center text-sm">
@@ -16,12 +34,7 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 			</CardHeader>
 			<CardContent>
 				<Table className="w-full table-fixed">
-					<colgroup>
-						<col className="w-[5%]"/>
-						<col className="w-[40%]"/>
-						<col className="w-[40%]"/>
-						<col className="w-[15%]"/>
-					</colgroup>
+					{colGroup}
 					<TableHeader>
 						<TableRow className="text-center text-sm">
 							<TableHead className="py-0 text-[9px]">Room</TableHead>

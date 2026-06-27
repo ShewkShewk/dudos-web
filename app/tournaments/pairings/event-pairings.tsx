@@ -32,7 +32,7 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 				<CardTitle className="font-light leading-tight ">{eventPairing.name} Round
 					#{eventPairing.number} @ {eventPairing.startTime}</CardTitle>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="p-1">
 				<Table className="w-full table-fixed">
 					{colGroup}
 					<TableHeader>

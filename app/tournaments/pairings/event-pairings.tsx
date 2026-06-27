@@ -15,7 +15,13 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 					#{eventPairing.number} @ {eventPairing.startTime}</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<Table>
+				<Table className="w-full table-fixed">
+					<colgroup>
+						<col className="w-[5%]"/>
+						<col className="w-[40%]"/>
+						<col className="w-[40%]"/>
+						<col className="w-[15%]"/>
+					</colgroup>
 					<TableHeader>
 						<TableRow className="text-center text-sm">
 							<TableHead className="py-0 text-[9px]">Room</TableHead>
@@ -61,11 +67,11 @@ function PairingRow({pairing, flighted}: { pairing: SectionPairing, flighted: bo
 			break
 	}
 	return (<TableRow key={pairing.affEntry?.id} className="even:bg-gray-200">
-		<TableCell className={`py-0 text-[9px] ${roomTextColor}`}>{room}</TableCell>
+		<TableCell className={`py-0 text-[9px] ${roomTextColor} whitespace-normal wrap-break-words`}>{room}</TableCell>
 		{flighted && <TableCell className="py-0 text-[9px]">{pairing.flight}</TableCell>}
-		<TableCell className="py-0 text-[9px]">{affTeam?.name}</TableCell>
-		<TableCell className="py-0 text-[9px]">{negTeam?.name}</TableCell>
-		<TableCell className="py-0 text-[9px]">{
+		<TableCell className="py-0 text-[9px] whitespace-normal wrap-break-words">{affTeam?.name}</TableCell>
+		<TableCell className="py-0 text-[9px] whitespace-normal wrap-break-words">{negTeam?.name}</TableCell>
+		<TableCell className="py-0 text-[9px] whitespace-normal wrap-break-words">{
 			pairing.judges?.map(judge => (judge.name)).join(",")
 		}</TableCell>
 	</TableRow>)

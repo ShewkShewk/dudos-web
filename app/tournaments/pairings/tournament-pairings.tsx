@@ -37,10 +37,11 @@ export function TournamentPairingsTable({tournament}: TournamentPairingsProps) {
 	tournamentPairings.eventPairings.sort((a, b) => a.pairings.length - b.pairings.length)
 
 	return (
-		<div className="columns-1 md:columns-2 space-y-4 md:space-y-0">
+		<div className="min-w-0 max-w-full columns-1 gap-1 space-y-1 overflow-hidden md:columns-2">
 			{
 				tournamentPairings.eventPairings.map(pairing => (
-					<div key={pairing.name} className="break-inside-avoid mb-4">
+					<div key={pairing.name}
+					     className="inline-block w-full min-w-0 max-w-full break-inside-avoid overflow-hidden">
 						<EventPairingTable eventPairing={pairing}/>
 					</div>
 				))

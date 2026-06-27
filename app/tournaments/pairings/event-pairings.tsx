@@ -9,9 +9,9 @@ export interface EventPairingsProps {
 export function EventPairingTable({eventPairing}: EventPairingsProps) {
 	let colGroup = (
 		<colgroup>
-			<col className="w-[5%]"/>
-			<col className="w-[40%]"/>
-			<col className="w-[40%]"/>
+			<col className="w-[7%]"/>
+			<col className="w-[39%]"/>
+			<col className="w-[39%]"/>
 			<col className="w-[15%]"/>
 		</colgroup>
 	)

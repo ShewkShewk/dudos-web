@@ -9,7 +9,8 @@ import { TournamentPairingsTable } from "@/app/tournaments/pairings/tournament-p
 export default function Page() {
 	const {tournaments} = useSharedTournaments()
 	const [chosenTournament, setChosenTournament] = useState<Tournament | null>(null)
-	let tournamentPairings = <div>No tournaments chosen</div>;
+	let tournamentPairings = <h2 className="mt-4 text-center text-2xl font-semibold">☝️Please choose a
+		tournament☝️</h2>;
 	if (chosenTournament != null) {
 		tournamentPairings = <TournamentPairingsTable tournament={chosenTournament}/>
 	}

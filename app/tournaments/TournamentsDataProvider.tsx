@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Tournament } from "@/app/lib/domain";
 import { deleteTournamentAction, importTournamentAction } from "@/app/tournaments/actions";
+import { toast } from "sonner";
 
 type SharedTournamentsContextValue = {
 	tournaments: Tournament[]
@@ -33,17 +34,21 @@ export function TournamentsDataProvider({children}: { children: React.ReactNode 
 	}, [])
 
 	const importTournament = useCallback(async (tournamentId: number) => {
+		toast.info("Importing Tournament", {position: "top-center"})
 		setLoading(true)
 		await importTournamentAction(tournamentId)
 		await refreshTournaments()
 		setLoading(false)
+		toast.success("Tournament Loaded", {position: "top-center"})
 	}, [refreshTournaments])
 
 	const deleteTournament = useCallback(async (tournamentId: number) => {
+		toast.info("Deleting Tournament", {position: "top-center"})
 		setLoading(true)
 		await deleteTournamentAction(tournamentId)
 		await refreshTournaments()
 		setLoading(false)
+		toast.success("Tournament Deleted", {position: "top-center"})
 	}, [refreshTournaments])
 
 	useEffect(() => {

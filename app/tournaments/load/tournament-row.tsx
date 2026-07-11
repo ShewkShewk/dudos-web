@@ -18,6 +18,7 @@ export default function TournamentRow({tournament}: TournamentRowProps) {
 
 	const handleImport = () => {
 		startTransition(async () => {
+			toast.info("Loading Tournament", {position: "top-center"})
 			await importTournament(tournament.id)
 			toast.success("Tournament Loaded", {position: "top-center"})
 			await refreshTournaments()
@@ -25,6 +26,7 @@ export default function TournamentRow({tournament}: TournamentRowProps) {
 	}
 	const handleDelete = () => {
 		startTransition(async () => {
+			toast.info("Deleting tournament", {position: "top-center"})
 			await deleteTournament(tournament.id)
 			toast.success("Tournament Deleted", {position: "top-center"})
 			await refreshTournaments()

@@ -44,3 +44,7 @@ export type TournamentPairings = {
 	updateTime: string;
 	eventPairings: EventPairing[];
 };
+
+export type Summary = {
+	tournamentCount: number;
+}

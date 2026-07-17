@@ -47,4 +47,5 @@ export type TournamentPairings = {
 
 export type Summary = {
 	tournamentCount: number;
+	roundCount: number;
 }

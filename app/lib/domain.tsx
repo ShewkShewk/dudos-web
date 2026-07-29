@@ -49,3 +49,15 @@ export type Summary = {
 	tournamentCount: number;
 	roundCount: number;
 }
+
+export type SchoolStatus = {
+	id: number;
+	schoolName: string;
+	checkedIn: boolean;
+}
+
+export type TournamentSchoolsStatus = {
+	name: string;
+	updateTime: string;
+	schoolsStatus: SchoolStatus[];
+}

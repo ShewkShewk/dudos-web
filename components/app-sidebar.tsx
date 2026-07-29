@@ -54,8 +54,12 @@ const data = {
 			),
 			items: [
 				{
-					title: "Show Pairings",
+					title: "Pairings",
 					url: "/tournaments/pairings",
+				},
+				{
+					title: "School Check-Ins",
+					url: "/tournaments/schools"
 				}
 			],
 		},

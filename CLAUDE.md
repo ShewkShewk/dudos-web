@@ -66,6 +66,26 @@ The backend lives in a separate repo: https://github.com/ShewkShewk/dudosapi. Ch
 - **Production:** runs on Google Cloud Run. `API_BASE_URL` is the Cloud Run service URL, and requests are authenticated with Google ID tokens from the service account.
 - **Local:** the backend runs locally, and `.env.local` points `API_BASE_URL` at `http://localhost...`. The Cloud Run URL is kept commented out, so switching means swapping which line is commented. When the frontend fails to load data locally, first check that the local backend is running.
 
+### Finding the API contract (OpenAPI spec)
+
+The spec at `docs/openapi.yaml` in dudosapi is the source of truth for endpoints and response shapes. Read it before adding or changing anything in `app/lib/domain.tsx` or `app/lib/client.tsx`. Don't guess shapes.
+
+1. **Use the local clone first:** `~/GolandProjects/dudosapi/docs/openapi.yaml`.
+   - Run `git -C ~/GolandProjects/dudosapi status -sb` to check it's on `main` and not behind. If it's stale, say so rather than trusting it blindly.
+2. **Fallback if there's no local clone:** fetch https://raw.githubusercontent.com/ShewkShewk/dudosapi/main/docs/openapi.yaml with WebFetch. The `gh` CLI isn't installed.
+3. **Look up an endpoint:**
+   - Find its path under `paths:`, e.g. `grep -n "/tournaments/{id}/events/schools:" -A30`, to get the `operationId`, description and response `$ref`.
+   - Follow the `$ref` to `components/schemas/<Name>`, e.g. `awk '/^    <Name>:/{f=1;print;next} f&&/^    [A-Za-z]/{exit} f' docs/openapi.yaml`. Resolve nested `$ref`s the same way.
+4. **Map it to TypeScript in `domain.tsx`:**
+   - Keep the schema names and field names exactly as written.
+   - `integer` becomes `number`.
+   - Fields not in `required` are optional (`?`), and `nullable` fields get `| null`.
+   - Read each endpoint's `description` for semantics such as ordering, filtering and double-counting, and mention anything that affects the UI.
+
+Time fields differ between schemas:
+- `CentralDateTime` fields (`updateTime` on pairings and schools-status) come already formatted in Central, e.g. `2026-09-26 8:18AM`. Display them as-is.
+- `Tournament.updatedTime` is raw UTC (`2026-09-26T13:18:09`). Convert it to Central before showing it, as `formatCentralTime` does in `app/tournaments/counts/event-counts.tsx`.
+
 ## Deployment & access
 
 - **Frontend:** deployed to Vercel. Production env vars are set in the Vercel project, and there `API_BASE_URL` points at the Cloud Run backend.

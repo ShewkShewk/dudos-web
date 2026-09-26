@@ -8,7 +8,7 @@ import LoginPage from "@/app/login/page";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { Toaster } from "sonner";
 
 const inter = Inter({subsets: ['latin'], variable: '--font-sans'});
@@ -64,15 +64,7 @@ export default async function RootLayout({
 								orientation="vertical"
 								className="mr-2 data-vertical:h-4 data-vertical:self-auto"
 							/>
-							<Breadcrumb>
-								<BreadcrumbList>
-									<BreadcrumbItem className="hidden md:block">
-										<BreadcrumbLink href="#">
-											dudOs
-										</BreadcrumbLink>
-									</BreadcrumbItem>
-								</BreadcrumbList>
-							</Breadcrumb>
+							<AppBreadcrumb/>
 						</div>
 					</header>
 					{children}

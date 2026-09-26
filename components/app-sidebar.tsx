@@ -26,7 +26,7 @@ import {
 	TerminalIcon
 } from "lucide-react"
 
-const data = {
+export const data = {
 	navMain: [
 		{
 			title: "Admin",

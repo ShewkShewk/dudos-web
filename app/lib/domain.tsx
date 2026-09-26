@@ -61,3 +61,23 @@ export type TournamentSchoolsStatus = {
 	updateTime: string;
 	schoolsStatus: SchoolStatus[];
 }
+
+export type SchoolEntryCount = {
+	id: number;
+	name: string;
+	entryCount: number;
+	studentCount: number;
+}
+
+export type EventSchoolCounts = {
+	id: number;
+	name: string;
+	entryCount: number;
+	studentCount: number;
+	schools: SchoolEntryCount[];
+}
+
+export type TournamentEventSchoolCounts = {
+	name: string;
+	events: EventSchoolCounts[];
+}

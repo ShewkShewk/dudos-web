@@ -1,6 +1,12 @@
 import "server-only";
 import apiRequest from "@/app/lib/auth";
-import { Summary, Tournament, TournamentPairings, TournamentSchoolsStatus } from "@/app/lib/domain";
+import {
+	Summary,
+	Tournament,
+	TournamentEventSchoolCounts,
+	TournamentPairings,
+	TournamentSchoolsStatus
+} from "@/app/lib/domain";
 
 export async function GetTournaments(): Promise<Tournament[]> {
 	return apiRequest<Tournament[]>("/tournaments", {method: "GET"})
@@ -20,6 +26,10 @@ export async function GetLatestPairings(tournamentId: string): Promise<Tournamen
 
 export async function GetSchoolsStatus(tournamentId: string): Promise<TournamentSchoolsStatus> {
 	return apiRequest<TournamentSchoolsStatus>(`/tournaments/${tournamentId}/schools/status`, {method: "GET"})
+}
+
+export async function GetEventSchoolCounts(tournamentId: string): Promise<TournamentEventSchoolCounts> {
+	return apiRequest<TournamentEventSchoolCounts>(`/tournaments/${tournamentId}/events/schools`, {method: "GET"})
 }
 
 export async function GetSummary(): Promise<Summary> {

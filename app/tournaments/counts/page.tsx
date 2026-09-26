@@ -4,6 +4,7 @@ import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider"
 import { Tournament } from "@/app/lib/domain";
 import { useState } from "react";
 import { TournamentPicker } from "@/app/tournaments/pairings/tournament-picker";
+import { CountsByEventsTable } from "@/app/tournaments/counts/event-counts";
 
 export default function Page() {
 	const {tournaments} = useSharedTournaments()
@@ -11,7 +12,7 @@ export default function Page() {
 	let countsByEvents = <h2 className="mt-4 text-center text-2xl font-semibold">☝️Please choose a
 		tournament☝️</h2>;
 	if (chosenTournament != null) {
-		countsByEvents = <h2 className="mt-4 text-center text-2xl font-semibold">{chosenTournament.name}</h2>
+		countsByEvents = <CountsByEventsTable tournament={chosenTournament}/>
 	}
 	return (
 		<div>

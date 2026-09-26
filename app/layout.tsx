@@ -8,7 +8,6 @@ import LoginPage from "@/app/login/page";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
-import ExampleServerComponent from "@/app/server-component";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Toaster } from "sonner";
 
@@ -65,7 +64,6 @@ export default async function RootLayout({
 								orientation="vertical"
 								className="mr-2 data-vertical:h-4 data-vertical:self-auto"
 							/>
-							<ExampleServerComponent/>
 							<Breadcrumb>
 								<BreadcrumbList>
 									<BreadcrumbItem className="hidden md:block">
@@ -81,7 +79,6 @@ export default async function RootLayout({
 					<Toaster/>
 				</SidebarInset>
 			</SidebarProvider>
-			)
 		</TooltipProvider>
 		</body>
 		</html>

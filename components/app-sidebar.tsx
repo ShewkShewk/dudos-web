@@ -60,6 +60,10 @@ const data = {
 				{
 					title: "School Check-Ins",
 					url: "/tournaments/schools"
+				},
+				{
+					title: "Counts By Events",
+					url: "/tournaments/counts"
 				}
 			],
 		},

@@ -5,6 +5,8 @@ import { EventPairingTable } from "@/app/tournaments/pairings/event-pairings";
 import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider";
 import { Button } from "@/components/ui/button";
 
+const PAIRINGS_POLL_INTERVAL_MS = 30_000
+
 interface TournamentPairingsProps {
 	tournament: Tournament
 }
@@ -23,6 +25,15 @@ export function TournamentPairingsTable({tournament}: TournamentPairingsProps) {
 	useEffect(() => {
 		refreshTournamentPairings()
 	}, [tournament])
+
+	// Imports run on their own cadence elsewhere; just re-read the latest pairings.
+	useEffect(() => {
+		const interval = setInterval(() => {
+			refreshTournamentPairings().catch(console.error)
+		}, PAIRINGS_POLL_INTERVAL_MS)
+		return () => clearInterval(interval)
+	}, [refreshTournamentPairings])
+
 	if (tournamentPairings == null) {
 		return (
 			<div>

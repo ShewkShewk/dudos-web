@@ -72,7 +72,12 @@ function PairingRow({pairing, flighted}: { pairing: SectionPairing, flighted: bo
 	} else if (pairing.affResult == "BYE" || pairing.negResult == "BYE") {
 		room = "BYE"
 	}
-	const roundStatus = getRoundStatus(pairing)
+	// A section with no room and only one team is a bye; there's nothing left to run.
+	const singleTeamBye = pairing.room == null && (pairing.affEntry == null) !== (pairing.negEntry == null)
+	if (singleTeamBye) {
+		room = "BYE"
+	}
+	const roundStatus = singleTeamBye ? "DONE" : getRoundStatus(pairing)
 	let roomTextColor = "text-red-500"
 	switch (roundStatus) {
 		case "DONE":

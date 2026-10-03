@@ -4,6 +4,8 @@ import { TournamentSchoolsStatus } from "@/app/lib/domain";
 import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider";
 import { Button } from "@/components/ui/button";
 
+const STATUS_POLL_INTERVAL_MS = 30_000
+
 interface SchoolCheckInsProps {
 	tournament: Tournament
 }
@@ -22,6 +24,14 @@ export function SchoolCheckInsTable({tournament}: SchoolCheckInsProps) {
 	useEffect(() => {
 		refreshSchoolsStatus()
 	}, [tournament, refreshSchoolsStatus])
+
+	// Imports run on their own cadence elsewhere; just re-read the latest status.
+	useEffect(() => {
+		const interval = setInterval(() => {
+			refreshSchoolsStatus().catch(console.error)
+		}, STATUS_POLL_INTERVAL_MS)
+		return () => clearInterval(interval)
+	}, [refreshSchoolsStatus])
 
 	if (schoolsStatus == null) {
 		return (

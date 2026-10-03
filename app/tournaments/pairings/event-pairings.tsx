@@ -26,6 +26,9 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 			</colgroup>
 		)
 	}
+	const pairings = eventPairing.flighted
+		? [...eventPairing.pairings].sort(compareFlightThenRoom)
+		: eventPairing.pairings
 	return (
 		<Card className="m-1 p-0 border rounded-sm gap-0">
 			<CardHeader className="items-center text-center text-sm">
@@ -48,7 +51,7 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{eventPairing.pairings.map((pairing) => (
+						{pairings.map((pairing) => (
 							<PairingRow pairing={pairing} flighted={eventPairing.flighted}
 							            key={pairing.sectionId}></PairingRow>
 						))}
@@ -88,6 +91,17 @@ function PairingRow({pairing, flighted}: { pairing: SectionPairing, flighted: bo
 			pairing.judges?.map(judge => (judge.name)).join(",")
 		}</TableCell>
 	</TableRow>)
+}
+
+// Rooms compare naturally ("2" before "10"); sections without a room go last.
+function compareFlightThenRoom(a: SectionPairing, b: SectionPairing) {
+	if (a.flight !== b.flight) {
+		return a.flight - b.flight
+	}
+	if (a.room == null || b.room == null) {
+		return a.room == null ? (b.room == null ? 0 : 1) : -1
+	}
+	return a.room.localeCompare(b.room, undefined, {numeric: true, sensitivity: "base"})
 }
 
 function getRoundStatus(pairing: SectionPairing) {

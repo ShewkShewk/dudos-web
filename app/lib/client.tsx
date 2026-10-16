@@ -1,6 +1,8 @@
 import "server-only";
 import apiRequest from "@/app/lib/auth";
 import {
+	Event,
+	SpeakerAward,
 	Summary,
 	Tournament,
 	TournamentEventSchoolCounts,
@@ -30,6 +32,17 @@ export async function GetSchoolsStatus(tournamentId: string): Promise<Tournament
 
 export async function GetEventSchoolCounts(tournamentId: string): Promise<TournamentEventSchoolCounts> {
 	return apiRequest<TournamentEventSchoolCounts>(`/tournaments/${tournamentId}/events/schools`, {method: "GET"})
+}
+
+export async function GetEvents(tournamentId: string): Promise<Event[]> {
+	return apiRequest<Event[]>(`/tournaments/${tournamentId}/events`, {method: "GET"})
+}
+
+export async function GetSpeakerAwards(tournamentId: string, eventId: string, limit: string | null): Promise<SpeakerAward[]> {
+	return apiRequest<SpeakerAward[]>(`/tournaments/${tournamentId}/events/${eventId}/awards/speakers`, {
+		method: "GET",
+		params: limit == null ? {} : {limit}
+	})
 }
 
 export async function GetSummary(): Promise<Summary> {

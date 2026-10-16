@@ -81,3 +81,15 @@ export type TournamentEventSchoolCounts = {
 	name: string;
 	events: EventSchoolCounts[];
 }
+
+export type Event = {
+	id: number;
+	name: string;
+	speakerAwardsCount: number;
+}
+
+export type SpeakerAward = {
+	rank: number;
+	studentName: string;
+	schoolName: string;
+}

@@ -1,5 +1,7 @@
 import "server-only";
-import { Document, Page, renderToBuffer, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { Document, Image as PdfImage, Page, renderToBuffer, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { SpeakerAward, Tournament } from "@/app/lib/domain";
 
 export type EventSpeakerAwards = {
@@ -8,6 +10,9 @@ export type EventSpeakerAwards = {
 	requested: number
 	awards: SpeakerAward[]
 }
+
+// PNG export of public/dallas_debate.svg (react-pdf can't draw SVG files), trimmed of its white margin.
+const logo = readFileSync(fileURLToPath(new URL("./dallas-debate-logo.png", import.meta.url)))
 
 const styles = StyleSheet.create({
 	page: {
@@ -25,11 +30,8 @@ const styles = StyleSheet.create({
 		paddingBottom: 10,
 		marginBottom: 24,
 	},
-	organization: {
-		fontSize: 10,
-		letterSpacing: 2,
-		textTransform: "uppercase",
-		color: "#444444",
+	logo: {
+		width: 55,
 	},
 	tournamentName: {
 		fontFamily: "Times-Bold",
@@ -211,7 +213,7 @@ export async function renderSchoolSpeakerAwardsPdf(tournament: Tournament, event
 function ReportHeader({tournament}: { tournament: Tournament }) {
 	return (
 		<View style={styles.header}>
-			<Text style={styles.organization}>Dallas Urban Debate Alliance</Text>
+			<PdfImage style={styles.logo} src={{data: logo, format: "png"}}/>
 			<Text style={styles.tournamentName}>{tournament.name}</Text>
 			<Text style={styles.tournamentDate}>{formatTournamentDate(tournament.date)}</Text>
 		</View>

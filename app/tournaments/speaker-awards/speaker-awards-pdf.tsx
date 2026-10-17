@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 		paddingBottom: 60,
 		paddingHorizontal: 54,
 		fontFamily: "Times-Roman",
-		fontSize: 11,
+		fontSize: 8.8,
 		color: "#111111",
 	},
 	header: {
@@ -35,30 +35,30 @@ const styles = StyleSheet.create({
 	},
 	tournamentName: {
 		fontFamily: "Times-Bold",
-		fontSize: 18,
+		fontSize: 14.4,
 		marginTop: 6,
 		textAlign: "center",
 	},
 	tournamentDate: {
-		fontSize: 11,
+		fontSize: 8.8,
 		marginTop: 4,
 		color: "#444444",
 	},
 	eventName: {
 		fontFamily: "Times-Bold",
-		fontSize: 16,
+		fontSize: 12.8,
 		textAlign: "center",
 	},
 	subtitle: {
 		fontFamily: "Times-Italic",
-		fontSize: 12,
+		fontSize: 9.6,
 		textAlign: "center",
 		marginTop: 4,
 		marginBottom: 18,
 	},
 	note: {
 		fontFamily: "Times-Italic",
-		fontSize: 10,
+		fontSize: 8,
 		textAlign: "center",
 		marginBottom: 10,
 		color: "#444444",
@@ -92,8 +92,10 @@ const styles = StyleSheet.create({
 	},
 	schoolEventName: {
 		fontFamily: "Times-Bold",
-		fontSize: 13,
-		marginBottom: 4,
+		fontSize: 10.4,
+		borderBottomWidth: 1,
+		borderBottomColor: "#111111",
+		paddingBottom: 4,
 	},
 	footer: {
 		position: "absolute",
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
 		right: 54,
 		flexDirection: "row",
 		justifyContent: "space-between",
-		fontSize: 9,
+		fontSize: 7.2,
 		color: "#666666",
 	},
 })
@@ -192,9 +194,6 @@ export async function renderSchoolSpeakerAwardsPdf(tournament: Tournament, event
 					{school.events.map(event => (
 						<View key={event.eventId} style={styles.schoolEvent} wrap={false}>
 							<Text style={styles.schoolEventName}>{event.eventName}</Text>
-							<View style={styles.tableHeader}>
-								<Text>Student</Text>
-							</View>
 							{event.awards.map(award => (
 								<View key={award.rank} style={styles.row}>
 									<Text>{award.studentName}</Text>

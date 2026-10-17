@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
+type SpeakerAwardsReport = "events" | "schools"
+
 interface SpeakerAwardEventsProps {
 	tournament: Tournament
 }
@@ -37,7 +39,8 @@ function downloadPdf(pdf: Blob, fileName: string) {
 	link.href = url
 	link.download = fileName
 	link.click()
-	URL.revokeObjectURL(url)
+	// Safari can cancel the download if the URL is revoked in the same tick as the click.
+	setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 export function SpeakerAwardEventsTable({tournament}: SpeakerAwardEventsProps) {
@@ -45,7 +48,9 @@ export function SpeakerAwardEventsTable({tournament}: SpeakerAwardEventsProps) {
 	const [awardCounts, setAwardCounts] = useState<Record<number, string>>({})
 	// Events included in the report. Every event with awards starts selected.
 	const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set())
-	const [generating, setGenerating] = useState(false)
+	// The report currently being generated. Each report has its own button because Safari only
+	// keeps one download per click.
+	const [generating, setGenerating] = useState<SpeakerAwardsReport | null>(null)
 	const refreshEvents = useCallback(async () => {
 		const response = await fetch(`/api/tournaments/${tournament.id}/events`)
 		if (!response.ok) {
@@ -86,7 +91,7 @@ export function SpeakerAwardEventsTable({tournament}: SpeakerAwardEventsProps) {
 		.map(event => ({event, count: parseAwardCount(awardCounts[event.id] ?? "", event.speakerAwardsCount)}))
 	const reportEvents = parsedCounts.flatMap(({event, count}) =>
 		typeof count == "number" ? [{event, count}] : [])
-	const canGenerate = !generating
+	const canGenerate = generating == null
 		&& reportEvents.length > 0
 		&& reportEvents.length == parsedCounts.length
 
@@ -100,22 +105,20 @@ export function SpeakerAwardEventsTable({tournament}: SpeakerAwardEventsProps) {
 		setSelectedIds(next)
 	}
 
-	const generateReport = async () => {
-		setGenerating(true)
+	const generateReport = async (report: SpeakerAwardsReport) => {
+		setGenerating(report)
 		try {
 			const eventsParam = reportEvents.map(({event, count}) => `${event.id}:${count}`).join(",")
-			const reportUrl = `/api/tournaments/${tournament.id}/awards/speakers/report?events=${eventsParam}`
-			// Fetch both before downloading either, so a failure doesn't leave a half-finished pair.
-			const [eventsReport, schoolsReport] = await Promise.all([
-				fetchPdf(`${reportUrl}&report=events`),
-				fetchPdf(`${reportUrl}&report=schools`),
-			])
-			downloadPdf(eventsReport, `${tournament.name} - Speaker Awards.pdf`)
-			downloadPdf(schoolsReport, `${tournament.name} - Speaker Awards by School.pdf`)
+			const pdf = await fetchPdf(`/api/tournaments/${tournament.id}/awards/speakers/report?events=${eventsParam}&report=${report}`)
+			downloadPdf(pdf, report == "schools"
+				? `${tournament.name} - Speaker Awards by School.pdf`
+				: `${tournament.name} - Speaker Awards.pdf`)
 		} catch {
-			toast.error("Failed to generate speaker awards report", {position: "top-center"})
+			toast.error(report == "schools"
+				? "Failed to generate coaches' sheets"
+				: "Failed to generate speaker awards report", {position: "top-center"})
 		} finally {
-			setGenerating(false)
+			setGenerating(null)
 		}
 	}
 
@@ -182,9 +185,12 @@ export function SpeakerAwardEventsTable({tournament}: SpeakerAwardEventsProps) {
 					))}
 				</TableBody>
 			</Table>
-			<div className="mt-2">
-				<Button className="w-full cursor-pointer bg-blue-600 text-white hover:bg-blue-700" disabled={!canGenerate} onClick={generateReport}>
-					{generating ? "Generating..." : "Generate Report"}
+			<div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+				<Button className="w-full cursor-pointer bg-blue-600 text-white hover:bg-blue-700" disabled={!canGenerate} onClick={() => generateReport("events")}>
+					{generating == "events" ? "Generating..." : "Download Awards Report"}
+				</Button>
+				<Button className="w-full cursor-pointer bg-blue-600 text-white hover:bg-blue-700" disabled={!canGenerate} onClick={() => generateReport("schools")}>
+					{generating == "schools" ? "Generating..." : "Download Coaches' Sheets"}
 				</Button>
 			</div>
 		</div>

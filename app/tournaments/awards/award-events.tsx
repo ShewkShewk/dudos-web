@@ -10,7 +10,8 @@ type AwardType = "speaker" | "entry"
 
 type AwardsReport = "speakerEvents" | "speakerSchools" | "entryEvents"
 
-// Each report has its own button because Safari only keeps one download per click.
+// Each report has its own button because Safari only keeps one download per click. Buttons render in
+// this order.
 const reports: Record<AwardsReport, {
 	type: AwardType
 	label: string
@@ -25,19 +26,19 @@ const reports: Record<AwardsReport, {
 		fileName: "Speaker Awards",
 		error: "Failed to generate speaker awards report",
 	},
-	speakerSchools: {
-		type: "speaker",
-		label: "Download Coaches' Sheets",
-		path: "awards/speakers/report?report=schools&",
-		fileName: "Speaker Awards by School",
-		error: "Failed to generate coaches' sheets",
-	},
 	entryEvents: {
 		type: "entry",
 		label: "Download Entry Awards Report",
 		path: "awards/entries/report?",
 		fileName: "Entry Awards",
 		error: "Failed to generate entry awards report",
+	},
+	speakerSchools: {
+		type: "speaker",
+		label: "Download Coaches' Sheets",
+		path: "awards/speakers/report?report=schools&",
+		fileName: "Speaker Awards by School",
+		error: "Failed to generate coaches' sheets",
 	},
 }
 

@@ -2,13 +2,20 @@ import "server-only";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { Document, Image as PdfImage, Page, renderToBuffer, StyleSheet, Text, View } from "@react-pdf/renderer";
-import { SpeakerAward, Tournament } from "@/app/lib/domain";
+import { EntryAward, SpeakerAward, Tournament } from "@/app/lib/domain";
 
 export type EventSpeakerAwards = {
 	eventId: number
 	eventName: string
 	requested: number
 	awards: SpeakerAward[]
+}
+
+export type EventEntryAwards = {
+	eventId: number
+	eventName: string
+	requested: number
+	awards: EntryAward[]
 }
 
 // PNG export of public/dallas_debate.svg (react-pdf can't draw SVG files), trimmed of its white margin.
@@ -81,6 +88,9 @@ const styles = StyleSheet.create({
 	studentColumn: {width: "40%", paddingRight: 8},
 	schoolColumn: {width: "36%", paddingRight: 8},
 	awardedColumn: {width: "14%", alignItems: "center", textAlign: "center"},
+	// Entry school can list two schools for a hybrid entry, so it gets more room than the code.
+	entryColumn: {width: "32%", paddingRight: 8},
+	entrySchoolColumn: {width: "44%", paddingRight: 8},
 	checkBox: {
 		width: 12,
 		height: 12,
@@ -135,6 +145,46 @@ export async function renderSpeakerAwardsPdf(tournament: Tournament, eventAwards
 							<Text style={styles.rankColumn}>{award.rank}</Text>
 							<Text style={styles.studentColumn}>{award.studentName}</Text>
 							<Text style={styles.schoolColumn}>{award.schoolName}</Text>
+							<View style={styles.awardedColumn}>
+								<View style={styles.checkBox}/>
+							</View>
+						</View>
+					))}
+
+					<ReportFooter generatedAt={generatedAt}/>
+				</Page>
+			))}
+		</Document>
+	)
+}
+
+// One page per event in the order given, listing the event's top entries (prelim seeds).
+export async function renderEntryAwardsPdf(tournament: Tournament, eventAwards: EventEntryAwards[]) {
+	const generatedAt = formatCentralNow()
+	return renderToBuffer(
+		<Document title={`${tournament.name} Entry Awards`} author="Dallas Urban Debate Alliance">
+			{eventAwards.map(event => (
+				<Page key={event.eventId} size="LETTER" style={styles.page}>
+					<ReportHeader tournament={tournament}/>
+
+					<Text style={styles.eventName}>{event.eventName}</Text>
+					<Text style={styles.subtitle}>Entry Awards</Text>
+					{event.awards.length < event.requested &&
+                        <Text style={styles.note}>
+                            Only {event.awards.length} of {event.requested} requested awards are available.
+                        </Text>}
+
+					<View style={styles.tableHeader} fixed>
+						<Text style={styles.rankColumn}>Place</Text>
+						<Text style={styles.entryColumn}>Entry</Text>
+						<Text style={styles.entrySchoolColumn}>School</Text>
+						<Text style={styles.awardedColumn}>Awarded</Text>
+					</View>
+					{event.awards.map(award => (
+						<View key={award.rank} style={styles.row} wrap={false}>
+							<Text style={styles.rankColumn}>{award.rank}</Text>
+							<Text style={styles.entryColumn}>{award.entryName}</Text>
+							<Text style={styles.entrySchoolColumn}>{award.schoolName}</Text>
 							<View style={styles.awardedColumn}>
 								<View style={styles.checkBox}/>
 							</View>

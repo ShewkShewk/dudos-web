@@ -1,6 +1,7 @@
 import "server-only";
 import apiRequest from "@/app/lib/auth";
 import {
+	EntryAward,
 	Event,
 	SpeakerAward,
 	Summary,
@@ -40,6 +41,13 @@ export async function GetEvents(tournamentId: string): Promise<Event[]> {
 
 export async function GetSpeakerAwards(tournamentId: string, eventId: string, limit: string | null): Promise<SpeakerAward[]> {
 	return apiRequest<SpeakerAward[]>(`/tournaments/${tournamentId}/events/${eventId}/awards/speakers`, {
+		method: "GET",
+		params: limit == null ? {} : {limit}
+	})
+}
+
+export async function GetEntryAwards(tournamentId: string, eventId: string, limit: string | null): Promise<EntryAward[]> {
+	return apiRequest<EntryAward[]>(`/tournaments/${tournamentId}/events/${eventId}/awards/entries`, {
 		method: "GET",
 		params: limit == null ? {} : {limit}
 	})

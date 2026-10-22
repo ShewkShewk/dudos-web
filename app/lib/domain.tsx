@@ -86,10 +86,17 @@ export type Event = {
 	id: number;
 	name: string;
 	speakerAwardsCount: number;
+	entryAwardsCount: number;
 }
 
 export type SpeakerAward = {
 	rank: number;
 	studentName: string;
+	schoolName: string;
+}
+
+export type EntryAward = {
+	rank: number;
+	entryName: string;
 	schoolName: string;
 }

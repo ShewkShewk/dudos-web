@@ -1,6 +1,6 @@
 import { GetEvents, GetSpeakerAwards, GetTournaments } from "@/app/lib/client";
 import { auth } from "@/auth";
-import { renderSchoolSpeakerAwardsPdf, renderSpeakerAwardsPdf } from "@/app/tournaments/speaker-awards/speaker-awards-pdf";
+import { renderSchoolSpeakerAwardsPdf, renderSpeakerAwardsPdf } from "@/app/tournaments/awards/awards-pdf";
 
 import { NextRequest } from 'next/server';
 

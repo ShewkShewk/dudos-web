@@ -64,8 +64,8 @@ export const data = {
 					url: "/tournaments/counts"
 				},
 				{
-					title: "Speaker Awards",
-					url: "/tournaments/speaker-awards"
+					title: "Awards",
+					url: "/tournaments/awards"
 				}
 			],
 		},

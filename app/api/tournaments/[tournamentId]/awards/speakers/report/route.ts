@@ -1,22 +1,17 @@
 import { GetEvents, GetSpeakerAwards, GetTournaments } from "@/app/lib/client";
 import { auth } from "@/auth";
-import { renderSchoolSpeakerAwardsPdf, renderSpeakerAwardsPdf } from "@/app/tournaments/awards/awards-pdf";
+import { renderSpeakerAwardsPdf } from "@/app/tournaments/awards/awards-pdf";
 
 import { NextRequest } from 'next/server';
 
-// GET ?events=<eventId>:<awards>,<eventId>:<awards>,...&report=events|schools returns a speaker
-// awards PDF. "events" (the default) has one page per event in the order given; "schools" is the
-// coaches' sheet with one page per school that placed.
+// GET ?events=<eventId>:<awards>,<eventId>:<awards>,... returns a speaker awards PDF with one page
+// per event in the order given. The coaches' sheets are at /awards/coaches/report.
 export async function GET(request: NextRequest, {params}: { params: Promise<{ tournamentId: string; }>; }) {
 	const session = await auth()
 	if (!session?.user) {
 		return Response.json({error: 'Unauthorized'}, {status: 401})
 	}
 	const tournamentId = (await params).tournamentId
-	const report = request.nextUrl.searchParams.get("report") ?? "events"
-	if (report != "events" && report != "schools") {
-		return Response.json({error: 'Invalid report parameter'}, {status: 400})
-	}
 
 	const requested = (request.nextUrl.searchParams.get("events") ?? "")
 		.split(",")
@@ -46,12 +41,8 @@ export async function GET(request: NextRequest, {params}: { params: Promise<{ to
 		requested: count,
 		awards: await GetSpeakerAwards(tournamentId, String(event!.id), String(count)),
 	})))
-	const pdf = report == "schools"
-		? await renderSchoolSpeakerAwardsPdf(tournament, eventAwards)
-		: await renderSpeakerAwardsPdf(tournament, eventAwards)
-	const fileName = report == "schools"
-		? `${tournament.name} - Speaker Awards by School.pdf`
-		: `${tournament.name} - Speaker Awards.pdf`
+	const pdf = await renderSpeakerAwardsPdf(tournament, eventAwards)
+	const fileName = `${tournament.name} - Speaker Awards.pdf`
 	return new Response(new Uint8Array(pdf), {
 		headers: {
 			"Content-Type": "application/pdf",

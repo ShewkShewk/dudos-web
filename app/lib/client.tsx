@@ -8,6 +8,7 @@ import {
 	Tournament,
 	TournamentEventSchoolCounts,
 	TournamentPairings,
+	TournamentSchoolResult,
 	TournamentSchoolsStatus
 } from "@/app/lib/domain";
 
@@ -37,6 +38,10 @@ export async function GetEventSchoolCounts(tournamentId: string): Promise<Tourna
 
 export async function GetEvents(tournamentId: string): Promise<Event[]> {
 	return apiRequest<Event[]>(`/tournaments/${tournamentId}/events`, {method: "GET"})
+}
+
+export async function GetSchoolResults(tournamentId: string): Promise<TournamentSchoolResult[] | null> {
+	return apiRequest<TournamentSchoolResult[] | null>(`/tournaments/${tournamentId}/schools/results`, {method: "GET"})
 }
 
 export async function GetSpeakerAwards(tournamentId: string, eventId: string, limit: string | null): Promise<SpeakerAward[]> {

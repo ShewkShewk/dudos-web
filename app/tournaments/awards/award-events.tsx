@@ -14,6 +14,8 @@ type AwardsReport = "speakerEvents" | "speakerSchools" | "entryEvents"
 // this order.
 const reports: Record<AwardsReport, {
 	type: AwardType
+	// Whether the report can be generated with no events of its award type selected.
+	allowNoEvents: boolean
 	label: string
 	path: string
 	fileName: string
@@ -21,13 +23,15 @@ const reports: Record<AwardsReport, {
 }> = {
 	speakerEvents: {
 		type: "speaker",
+		allowNoEvents: false,
 		label: "Download Speaker Awards Report",
-		path: "awards/speakers/report?report=events&",
+		path: "awards/speakers/report?",
 		fileName: "Speaker Awards",
 		error: "Failed to generate speaker awards report",
 	},
 	entryEvents: {
 		type: "entry",
+		allowNoEvents: false,
 		label: "Download Entry Awards Report",
 		path: "awards/entries/report?",
 		fileName: "Entry Awards",
@@ -35,9 +39,10 @@ const reports: Record<AwardsReport, {
 	},
 	speakerSchools: {
 		type: "speaker",
+		allowNoEvents: true,
 		label: "Download Coaches' Sheets",
-		path: "awards/speakers/report?report=schools&",
-		fileName: "Speaker Awards by School",
+		path: "awards/coaches/report?",
+		fileName: "Coaches' Sheets",
 		error: "Failed to generate coaches' sheets",
 	},
 }
@@ -148,9 +153,10 @@ export function AwardEventsTable({tournament}: AwardEventsProps) {
 		return valid.length == parsedCounts.length ? valid : null
 	}
 
-	const canGenerate = (type: AwardType) => {
+	const canGenerate = (report: AwardsReport) => {
+		const {type, allowNoEvents} = reports[report]
 		const events = reportEvents(type)
-		return generating == null && events != null && events.length > 0
+		return generating == null && events != null && (allowNoEvents || events.length > 0)
 	}
 
 	const toggleSelected = (eventId: number, selected: boolean) => {
@@ -252,7 +258,7 @@ export function AwardEventsTable({tournament}: AwardEventsProps) {
 			<div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
 				{(Object.keys(reports) as AwardsReport[]).map(report => (
 					<Button key={report} className="w-full cursor-pointer bg-blue-600 text-white hover:bg-blue-700"
-							disabled={!canGenerate(reports[report].type)} onClick={() => generateReport(report)}>
+							disabled={!canGenerate(report)} onClick={() => generateReport(report)}>
 						{generating == report ? "Generating..." : reports[report].label}
 					</Button>
 				))}

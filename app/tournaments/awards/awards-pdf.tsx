@@ -2,7 +2,7 @@ import "server-only";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { Document, Image as PdfImage, Page, renderToBuffer, StyleSheet, Text, View } from "@react-pdf/renderer";
-import { EntryAward, SpeakerAward, Tournament } from "@/app/lib/domain";
+import { EntryAward, SchoolEventResult, SpeakerAward, Tournament, TournamentSchoolResult } from "@/app/lib/domain";
 
 export type EventSpeakerAwards = {
 	eventId: number
@@ -97,8 +97,42 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: "#111111",
 	},
+	// The coaches' sheet uses tighter spacing than the awards reports so each school fits on one page.
+	compactHeader: {
+		marginBottom: 14,
+	},
+	compactLogo: {
+		width: 45,
+	},
+	compactSubtitle: {
+		marginBottom: 10,
+	},
+	compactRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		borderBottomWidth: 0.5,
+		borderBottomColor: "#999999",
+		paddingVertical: 4,
+	},
+	nameColumn: {width: "50%", paddingRight: 8},
+	resultEventColumn: {width: "52%", paddingRight: 8},
+	resultNumberColumn: {width: "12%", textAlign: "center"},
+	totalsRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		borderTopWidth: 1,
+		borderTopColor: "#111111",
+		paddingVertical: 4,
+		fontFamily: "Times-Bold",
+	},
+	sectionHeading: {
+		fontFamily: "Times-Bold",
+		fontSize: 11.2,
+		marginTop: 16,
+		marginBottom: 6,
+	},
 	schoolEvent: {
-		marginBottom: 16,
+		marginBottom: 10,
 	},
 	schoolEventName: {
 		fontFamily: "Times-Bold",
@@ -198,55 +232,87 @@ export async function renderEntryAwardsPdf(tournament: Tournament, eventAwards: 
 	)
 }
 
-export type SchoolSpeakerAwards = {
+type ResultCounts = Pick<SchoolEventResult, "entryCount" | "studentCount" | "entryWins" | "entryLosses">
+
+export type CoachesSheet = {
 	schoolName: string
-	events: { eventId: number, eventName: string, awards: SpeakerAward[] }[]
+	events: SchoolEventResult[]
+	totals: ResultCounts
+	speakerAwards: { eventId: number, eventName: string, studentNames: string[] }[]
 }
 
-// Regroups the per-event awards by school for the coaches' sheet: schools alphabetically, each
-// school's events in report order, and each event's students alphabetically by name.
-export function groupAwardsBySchool(eventAwards: EventSpeakerAwards[]): SchoolSpeakerAwards[] {
-	const schools = new Map<string, SchoolSpeakerAwards>()
-	for (const event of eventAwards) {
-		for (const award of event.awards) {
-			const schoolName = award.schoolName || "School Not Listed"
-			const school = schools.get(schoolName) ?? {schoolName, events: []}
-			schools.set(schoolName, school)
-			let schoolEvent = school.events.find(e => e.eventId == event.eventId)
-			if (schoolEvent == null) {
-				schoolEvent = {eventId: event.eventId, eventName: event.eventName, awards: []}
-				school.events.push(schoolEvent)
-			}
-			schoolEvent.awards.push(award)
-		}
-	}
-	for (const school of schools.values()) {
-		for (const schoolEvent of school.events) {
-			schoolEvent.awards.sort((a, b) => a.studentName.localeCompare(b.studentName))
-		}
-	}
-	return [...schools.values()].sort((a, b) => a.schoolName.localeCompare(b.schoolName))
+// One sheet per school in the results: schools alphabetically, each with its events alphabetically.
+// Speaker awards are matched to schools by name, and only for events the school entered, so an award
+// whose school isn't in the results is left off the sheets.
+export function buildCoachesSheets(results: TournamentSchoolResult[], eventAwards: EventSpeakerAwards[]): CoachesSheet[] {
+	return results
+		.map(school => {
+			const events = [...school.events].sort((a, b) => a.name.localeCompare(b.name))
+			const eventIds = new Set(events.map(event => event.id))
+			const totals = events.reduce((sum, event) => ({
+				entryCount: sum.entryCount + event.entryCount,
+				studentCount: sum.studentCount + event.studentCount,
+				entryWins: sum.entryWins + event.entryWins,
+				entryLosses: sum.entryLosses + event.entryLosses,
+			}), {entryCount: 0, studentCount: 0, entryWins: 0, entryLosses: 0})
+			const speakerAwards = school.schoolName == "" ? [] : eventAwards
+				.filter(event => eventIds.has(event.eventId))
+				.map(event => ({
+					eventId: event.eventId,
+					eventName: event.eventName,
+					studentNames: event.awards
+						.filter(award => award.schoolName == school.schoolName)
+						.map(award => award.studentName)
+						.sort((a, b) => a.localeCompare(b)),
+				}))
+				.filter(event => event.studentNames.length > 0)
+			return {schoolName: school.schoolName || "School Not Listed", events, totals, speakerAwards}
+		})
+		.sort((a, b) => a.schoolName.localeCompare(b.schoolName))
 }
 
-// One page per school, listing the events it placed in and which of its students placed. Ranks are
-// left off; coaches only get names.
-export async function renderSchoolSpeakerAwardsPdf(tournament: Tournament, eventAwards: EventSpeakerAwards[]) {
+// One page per school: a table of its events with entry, student and win/loss counts, then the
+// students who won speaker awards in each event, or N/A when none did. Ranks are left off; coaches
+// only get names.
+export async function renderCoachesSheetsPdf(tournament: Tournament, results: TournamentSchoolResult[], eventAwards: EventSpeakerAwards[]) {
 	const generatedAt = formatCentralNow()
 	return renderToBuffer(
-		<Document title={`${tournament.name} Speaker Awards by School`} author="Dallas Urban Debate Alliance">
-			{groupAwardsBySchool(eventAwards).map(school => (
-				<Page key={school.schoolName} size="LETTER" style={styles.page}>
-					<ReportHeader tournament={tournament}/>
+		<Document title={`${tournament.name} Coaches' Sheets`} author="Dallas Urban Debate Alliance">
+			{buildCoachesSheets(results, eventAwards).map((school, index) => (
+				<Page key={index} size="LETTER" style={styles.page}>
+					<ReportHeader tournament={tournament} compact/>
 
 					<Text style={styles.eventName}>{school.schoolName}</Text>
-					<Text style={styles.subtitle}>Speaker Awards</Text>
+					<Text style={[styles.subtitle, styles.compactSubtitle]}>Coaches&apos; Sheet</Text>
 
+					<View style={styles.tableHeader}>
+						<Text style={styles.resultEventColumn}>Event</Text>
+						<Text style={styles.resultNumberColumn}>Entries</Text>
+						<Text style={styles.resultNumberColumn}>Students</Text>
+						<Text style={styles.resultNumberColumn}>Wins</Text>
+						<Text style={styles.resultNumberColumn}>Losses</Text>
+					</View>
 					{school.events.map(event => (
+						<View key={event.id} style={styles.compactRow} wrap={false}>
+							<Text style={styles.resultEventColumn}>{event.name}</Text>
+							<ResultCountColumns counts={event}/>
+						</View>
+					))}
+					<View style={styles.totalsRow} wrap={false}>
+						<Text style={styles.resultEventColumn}>Total</Text>
+						<ResultCountColumns counts={school.totals}/>
+					</View>
+
+					<Text style={styles.sectionHeading}>Speaker Awards</Text>
+					{school.speakerAwards.length == 0 &&
+                        <Text>N/A</Text>}
+					{school.speakerAwards.map(event => (
 						<View key={event.eventId} style={styles.schoolEvent} wrap={false}>
 							<Text style={styles.schoolEventName}>{event.eventName}</Text>
-							{event.awards.map(award => (
-								<View key={award.rank} style={styles.row}>
-									<Text>{award.studentName}</Text>
+							{nameColumnRows(event.studentNames).map(([left, right], index) => (
+								<View key={index} style={styles.compactRow}>
+									<Text style={styles.nameColumn}>{left}</Text>
+									<Text style={styles.nameColumn}>{right}</Text>
 								</View>
 							))}
 						</View>
@@ -259,10 +325,30 @@ export async function renderSchoolSpeakerAwardsPdf(tournament: Tournament, event
 	)
 }
 
-function ReportHeader({tournament}: { tournament: Tournament }) {
+// Splits names into two columns read top to bottom, left column first, as [left, right] rows. The
+// left column gets the extra name when the count is odd.
+function nameColumnRows(names: string[]): [string, string | undefined][] {
+	const half = Math.ceil(names.length / 2)
+	return names.slice(0, half).map((name, index) => [name, names[half + index]])
+}
+
+// Wins and losses show a dash when no rounds have been decided.
+function ResultCountColumns({counts}: { counts: ResultCounts }) {
+	const decided = counts.entryWins != 0 || counts.entryLosses != 0
 	return (
-		<View style={styles.header}>
-			<PdfImage style={styles.logo} src={{data: logo, format: "png"}}/>
+		<>
+			<Text style={styles.resultNumberColumn}>{counts.entryCount}</Text>
+			<Text style={styles.resultNumberColumn}>{counts.studentCount}</Text>
+			<Text style={styles.resultNumberColumn}>{decided ? counts.entryWins : "—"}</Text>
+			<Text style={styles.resultNumberColumn}>{decided ? counts.entryLosses : "—"}</Text>
+		</>
+	)
+}
+
+function ReportHeader({tournament, compact = false}: { tournament: Tournament, compact?: boolean }) {
+	return (
+		<View style={compact ? [styles.header, styles.compactHeader] : styles.header}>
+			<PdfImage style={compact ? styles.compactLogo : styles.logo} src={{data: logo, format: "png"}}/>
 			<Text style={styles.tournamentName}>{tournament.name}</Text>
 			<Text style={styles.tournamentDate}>{formatTournamentDate(tournament.date)}</Text>
 		</View>

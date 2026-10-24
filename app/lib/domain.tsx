@@ -95,6 +95,21 @@ export type SpeakerAward = {
 	schoolName: string;
 }
 
+export type TournamentSchoolResult = {
+	schoolId: number;
+	schoolName: string;
+	events: SchoolEventResult[];
+}
+
+export type SchoolEventResult = {
+	id: number;
+	name: string;
+	entryCount: number;
+	studentCount: number;
+	entryWins: number;
+	entryLosses: number;
+}
+
 export type EntryAward = {
 	rank: number;
 	entryName: string;

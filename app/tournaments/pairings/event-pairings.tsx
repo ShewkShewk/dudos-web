@@ -1,12 +1,15 @@
 import { EventPairing, SectionPairing } from "@/app/lib/domain";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 
 export interface EventPairingsProps {
 	eventPairing: EventPairing
+	onHide: () => void
 }
 
-export function EventPairingTable({eventPairing}: EventPairingsProps) {
+export function EventPairingTable({eventPairing, onHide}: EventPairingsProps) {
 	let colGroup = (
 		<colgroup>
 			<col className="w-[7%]"/>
@@ -31,9 +34,14 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 		: eventPairing.pairings
 	return (
 		<Card className="m-1 p-0 border rounded-sm gap-0">
-			<CardHeader className="items-center text-center text-sm">
-				<CardTitle className="font-light leading-tight ">{eventPairing.name} Round
+			<CardHeader className="relative items-center text-center text-sm">
+				<CardTitle className="px-7 font-light leading-tight ">{eventPairing.name} Round
 					#{eventPairing.number} @ {eventPairing.startTime}</CardTitle>
+				<Button variant="ghost" size="icon-xs" className="absolute inset-y-0 right-1 my-auto cursor-pointer"
+				        aria-label={`Hide ${eventPairing.name}`} title={`Hide ${eventPairing.name}`}
+				        onClick={onHide}>
+					<EyeOffIcon/>
+				</Button>
 			</CardHeader>
 			<CardContent className="p-1">
 				<Table className="w-full table-fixed">
@@ -59,6 +67,30 @@ export function EventPairingTable({eventPairing}: EventPairingsProps) {
 				</Table>
 			</CardContent>
 		</Card>
+	)
+}
+
+export interface HiddenEventsBarProps {
+	hiddenEventNames: string[]
+	onShow: (name: string) => void
+	onShowAll: () => void
+}
+
+export function HiddenEventsBar({hiddenEventNames, onShow, onShowAll}: HiddenEventsBarProps) {
+	return (
+		<div className="flex flex-wrap items-center gap-1 m-1 text-xs">
+			<span className="text-muted-foreground">Hidden:</span>
+			{hiddenEventNames.map((name) => (
+				<Button key={name} variant="outline" size="xs" className="cursor-pointer"
+				        title={`Show ${name}`} onClick={() => onShow(name)}>
+					<EyeIcon/>
+					{name}
+				</Button>
+			))}
+			<Button variant="ghost" size="xs" className="cursor-pointer" onClick={onShowAll}>
+				Show all
+			</Button>
+		</div>
 	)
 }
 

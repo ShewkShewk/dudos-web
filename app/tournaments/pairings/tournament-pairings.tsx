@@ -1,7 +1,8 @@
 import { Tournament } from "@/app/lib/domain";
 import { useCallback, useEffect, useState } from "react";
 import { TournamentPairings } from "@/app/lib/domain";
-import { EventPairingTable } from "@/app/tournaments/pairings/event-pairings";
+import { EventPairingTable, HiddenEventsBar } from "@/app/tournaments/pairings/event-pairings";
+import { useHiddenEvents } from "@/app/tournaments/pairings/use-hidden-events";
 import { useSharedTournaments } from "@/app/tournaments/TournamentsDataProvider";
 import { Button } from "@/components/ui/button";
 
@@ -9,10 +10,12 @@ const PAIRINGS_POLL_INTERVAL_MS = 30_000
 
 interface TournamentPairingsProps {
 	tournament: Tournament
+	userEmail: string
 }
 
-export function TournamentPairingsTable({tournament}: TournamentPairingsProps) {
+export function TournamentPairingsTable({tournament, userEmail}: TournamentPairingsProps) {
 	const {refreshTournaments, importTournament} = useSharedTournaments()
+	const {hiddenEvents, hideEvent, showEvent, showAllEvents} = useHiddenEvents(userEmail, tournament.id)
 	const [tournamentPairings, setTournamentPairings] = useState<TournamentPairings | null>(null)
 	const refreshTournamentPairings = useCallback(async () => {
 		const response = await fetch(`/api/pairings/${tournament.id}`)
@@ -41,7 +44,9 @@ export function TournamentPairingsTable({tournament}: TournamentPairingsProps) {
 			</div>
 		)
 	}
-	tournamentPairings.eventPairings.sort((a, b) => a.pairings.length - b.pairings.length)
+	const eventPairings = [...tournamentPairings.eventPairings].sort((a, b) => a.pairings.length - b.pairings.length)
+	const visibleEventPairings = eventPairings.filter(pairing => !hiddenEvents.has(pairing.name))
+	const hiddenEventNames = eventPairings.filter(pairing => hiddenEvents.has(pairing.name)).map(pairing => pairing.name)
 
 	return (
 		<div>
@@ -61,12 +66,17 @@ export function TournamentPairingsTable({tournament}: TournamentPairingsProps) {
 				</Button>
 			</div>
 
+			{
+				hiddenEventNames.length > 0 &&
+				<HiddenEventsBar hiddenEventNames={hiddenEventNames} onShow={showEvent} onShowAll={showAllEvents}/>
+			}
+
 			<div className="min-w-0 max-w-full columns-1 gap-1 space-y-1 overflow-hidden md:columns-2">
 				{
-					tournamentPairings.eventPairings.map(pairing => (
+					visibleEventPairings.map(pairing => (
 						<div key={pairing.name}
 						     className="inline-block w-full min-w-0 max-w-full break-inside-avoid overflow-hidden">
-							<EventPairingTable eventPairing={pairing}/>
+							<EventPairingTable eventPairing={pairing} onHide={() => hideEvent(pairing.name)}/>
 						</div>
 					))
 				}

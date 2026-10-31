@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
 		paddingVertical: 8,
 	},
 	rankColumn: {width: "10%"},
-	studentColumn: {width: "40%", paddingRight: 8},
+	studentColumn: {width: "44%", paddingRight: 8},
 	schoolColumn: {width: "36%", paddingRight: 8},
-	awardedColumn: {width: "14%", alignItems: "center", textAlign: "center"},
+	awardedColumn: {width: "10%", alignItems: "center", textAlign: "center"},
 	// Entry school can list two schools for a hybrid entry, so it gets more room than the code.
-	entryColumn: {width: "32%", paddingRight: 8},
+	entryColumn: {width: "36%", paddingRight: 8},
 	entrySchoolColumn: {width: "44%", paddingRight: 8},
 	checkBox: {
 		width: 12,
@@ -169,19 +169,19 @@ export async function renderSpeakerAwardsPdf(tournament: Tournament, eventAwards
                         </Text>}
 
 					<View style={styles.tableHeader} fixed>
+						<Text style={styles.awardedColumn}>Awarded</Text>
 						<Text style={styles.rankColumn}>Place</Text>
 						<Text style={styles.studentColumn}>Student</Text>
 						<Text style={styles.schoolColumn}>School</Text>
-						<Text style={styles.awardedColumn}>Awarded</Text>
 					</View>
 					{event.awards.map(award => (
 						<View key={award.rank} style={styles.row} wrap={false}>
-							<Text style={styles.rankColumn}>{award.rank}</Text>
-							<Text style={styles.studentColumn}>{award.studentName}</Text>
-							<Text style={styles.schoolColumn}>{award.schoolName}</Text>
 							<View style={styles.awardedColumn}>
 								<View style={styles.checkBox}/>
 							</View>
+							<Text style={styles.rankColumn}>{award.rank}</Text>
+							<Text style={styles.studentColumn}>{award.studentName}</Text>
+							<Text style={styles.schoolColumn}>{award.schoolName}</Text>
 						</View>
 					))}
 
@@ -209,19 +209,19 @@ export async function renderEntryAwardsPdf(tournament: Tournament, eventAwards: 
                         </Text>}
 
 					<View style={styles.tableHeader} fixed>
+						<Text style={styles.awardedColumn}>Awarded</Text>
 						<Text style={styles.rankColumn}>Place</Text>
 						<Text style={styles.entryColumn}>Entry</Text>
 						<Text style={styles.entrySchoolColumn}>School</Text>
-						<Text style={styles.awardedColumn}>Awarded</Text>
 					</View>
 					{event.awards.map(award => (
 						<View key={award.rank} style={styles.row} wrap={false}>
-							<Text style={styles.rankColumn}>{award.rank}</Text>
-							<Text style={styles.entryColumn}>{award.entryName}</Text>
-							<Text style={styles.entrySchoolColumn}>{award.schoolName}</Text>
 							<View style={styles.awardedColumn}>
 								<View style={styles.checkBox}/>
 							</View>
+							<Text style={styles.rankColumn}>{award.rank}</Text>
+							<Text style={styles.entryColumn}>{award.entryName}</Text>
+							<Text style={styles.entrySchoolColumn}>{award.schoolName}</Text>
 						</View>
 					))}
 
